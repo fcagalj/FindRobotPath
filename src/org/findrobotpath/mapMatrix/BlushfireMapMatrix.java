@@ -38,12 +38,12 @@ public class BlushfireMapMatrix {
     {
         this.outputImageFile=new File(outputImagepath);
         this.outputCSVFile=new File(outputCSVPath);
-        mapMatrix(this.map);
+        //mapMatrix(this.map);
     }
     public BlushfireMapMatrix(int[][] map, String outputImagepath, String outputCSVPath)
     {
         this(outputImagepath, outputCSVPath);
-        this.map=map;
+        this.map=MatrixImageTools.transponseMatrix255values(map);
         mapMatrix(this.map);
     }
     

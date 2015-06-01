@@ -37,12 +37,10 @@ public class FindRobotPath {
         
         BlushfireMapMatrix bfm=new BlushfireMapMatrix(map,"mappedImage.png","mappedCSV.csv");
         
-        
-        Blushfire path=new Blushfire(map);
-        
-        path.wavefrontSearch();
-        
-        BlushfireNew bf=new BlushfireNew();
+//        
+//        Blushfire path=new Blushfire(map);
+//        path.wavefrontSearch();
+//        BlushfireNew bf=new BlushfireNew();
         
     }
     

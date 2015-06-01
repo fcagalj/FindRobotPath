@@ -30,14 +30,15 @@ public class MatrixImageTools {
             if((row.length-1)>calc_x)
                 calc_x=row.length;
             }
-        
+        System.out.println("***********************************");
         for(int i=0;i<map.length;i++){
             String line="";
             for(int j=0;j<map[0].length;j++){
                 line+=map[i][j]+" ";
             }
-            System.out.println("Line "+i+": "+line);
+            System.out.println("    Line "+i+": "+line);
         }
+        System.out.println("***********************************");
     }
     /**
      * Output matrix state to the console during loop.
@@ -124,5 +125,25 @@ public class MatrixImageTools {
         {
             e.printStackTrace();
         }
+    }
+    /**
+     * Transpone matrix so that value "1" become value "255"
+     * @param origMap
+     * @return 
+     */
+    public static int[][] transponseMatrix255values(int[][] origMap){
+        int[][] map=origMap;
+        for (int i=0;i<origMap.length;i++){
+            for(int j=0;j<origMap[0].length;j++){
+                if(origMap[i][j]==1){
+                    map[i][j]=255;
+                }
+            }
+        }
+        System.out.println(" O R I G I N A L");
+        printMapToConsole(origMap);
+        System.out.println(" 255 V A L U E S");
+        printMapToConsole(map);
+        return map;
     }
 }
