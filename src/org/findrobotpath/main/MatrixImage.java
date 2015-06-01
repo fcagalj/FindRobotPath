@@ -33,6 +33,8 @@ public class MatrixImage {
     private File inputImageFile;
     private File outputImageFile;
     private File outputCSVFile;
+    private String outputImageFilePath;
+    private String outputCSVFilePath;
     // map size
     public int origImgWidth, origImgHeight;
     
@@ -41,6 +43,8 @@ public class MatrixImage {
 
     public MatrixImage(String inputImagePath, String outputImagePath, String outputCSVPath) {
 	loadMap(inputImagePath);
+        this.outputCSVFilePath=outputCSVPath;
+        this.outputImageFilePath=outputImagePath;
         this.outputImageFile=new File(outputImagePath);
         this.outputCSVFile=new File(outputCSVPath);
     }
@@ -141,8 +145,8 @@ public class MatrixImage {
                 }
             }
             //exportMatrixToImageFile(res, "outputImageFileEmbed.png");
-            MatrixImageTools.exportMatrixToImageFile(res, "outputImage.png");
-            MatrixImageTools.exportMapToCSV(res, "outputCSVFile.csv");
+            MatrixImageTools.exportMatrixToImageFile(res, this.outputImageFilePath);
+            MatrixImageTools.exportMapToCSV(res, this.outputCSVFilePath);
             
             map=res;
             return res;

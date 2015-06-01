@@ -7,6 +7,8 @@ package org.findrobotpath.mapMatrix;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.findrobotpath.main.MatrixImageTools;
@@ -19,9 +21,12 @@ import org.findrobotpath.main.MatrixImageTools;
  */
 public class BlushfireMapMatrix {
     
+    private boolean debug=false; //flag to debaug logging
     
-    private File outputImageFile;
-    private File outputCSVFile;
+    //private File outputImageFile;
+    //private File outputCSVFile;
+    private String outputImageFilePath;
+    private String outputCSVFilePath;
     
     //Array matrix (testin value)
     private int[][] map=    {{  0,   0,   0,   0,    0,   0},
@@ -36,9 +41,11 @@ public class BlushfireMapMatrix {
     
     public BlushfireMapMatrix(String outputImagepath, String outputCSVPath)
     {
-        this.outputImageFile=new File(outputImagepath);
-        this.outputCSVFile=new File(outputCSVPath);
-        //mapMatrix(this.map);
+        this.outputCSVFilePath=outputCSVPath;
+        this.outputImageFilePath=outputImagepath;
+        ///////////////////////////////////////////////
+        //this.outputImageFile=new File(outputImagepath);
+        //this.outputCSVFile=new File(outputCSVPath);
     }
     public BlushfireMapMatrix(int[][] map, String outputImagepath, String outputCSVPath)
     {
@@ -81,7 +88,13 @@ public class BlushfireMapMatrix {
         List<Cell> openedList=new ArrayList();
         List<Cell> closedList=new ArrayList();
         populateOpenedAndClosedList(map, openedList, closedList); // To populate Opened and closed list
-        
+        if(debug){
+            System.out.println("Start mapping values: ");
+            MatrixImageTools.printMapToConsole(map);
+            MatrixImageTools.exportMapToCSV(map, "_output//startMappingCSV.csv");
+            MatrixImageTools.exportMatrixToImageFile(map, "_output//startMappingImage.png");
+            
+        }
         int map_y=map[0].length;    //matrix y size
         int map_x=map.length; //matrix x size
         
@@ -89,41 +102,86 @@ public class BlushfireMapMatrix {
         while(!openedList.isEmpty()){ //isempty(open_list)==0
             itter++;
             for(int i=0;i<map_x;i++){ //for i = 1:length(X) 
-                boolean isInBorder=isInBorder(i,map);
-                if(isInBorder){
-                    addColumnToList(closedList, map, i);
-                    removeColumnFromList(openedList, map, i);
-                }
-                else if(!isInBorder){
-                    List<Cell> neigh_X=new ArrayList();
+//                boolean isInBorder=isInBorder(i,map);
+//                if(isInBorder){
+//                    addColumnToList(closedList, map, i);
+//                    removeColumnFromList(openedList, map, i);
+//                }
+//                else if(!isInBorder){
+//                    if(debug){
+//                        System.out.println("*****************************\n  "+itter+". iterration, "+i+" row.");
+//                        System.out.println("    Opened cells: ");this.printListState(openedList);
+//                        System.out.println("    Closed cells: ");this.printListState(closedList);
+//                    }
+                    
                     for(int j=0;j<map_y;j++)//loop trought column for each row
                     {
-                        if((map[i][j]==freeBlockValue)){//ignore obstacles
-                            findFreeCellNeighbors(neigh_X, map, i, j);
+                        //if(debug)System.out.println("        Current cell (freBlock): |"+i+","+j+"| (value "+map[i][j]+")");
+                        Cell current=new Cell(i,j);
+                        //if(debug){System.out.println("      Current cell: |"+i+","+j+"| (value "+map[i][j]+")");}
+                        if((openedList.contains(current))){//ignore obstacles //&&((map[i][j]==freeBlockValue)||(map[i][j]<itter))
+                            
+                            if((map[i][j])==freeBlockValue){
+                                map[i][j]=itter;
+//                                closedList.add(current);
+//                                openedList.remove(current);
+                            }
+                            else if((map[i][j])<itter){
+                                map[i][j]++;
+                                closedList.add(current);
+                                openedList.remove(current);
+                            }
+                            List<Cell> neigh_X=new ArrayList();
+                            findCellNeighbors(neigh_X, map, i, j);
                             //findNeighborsForColumnFreeElments(neigh_X, map,i); //Store Neighbors in list neigh_X
                             for(Cell neighbor:neigh_X){
-                                if((map[neighbor.x][neighbor.y])<itter){
-                                    map[neighbor.x][neighbor.y]=itter;
+                                if(debug){
+                                    System.out.println("             Current neighbor: |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");
+                                }
+                                //if(openedList.contains(neighbor)){
+                                if(((map[neighbor.x][neighbor.y])!=0)&&((map[neighbor.x][neighbor.y])!=this.freeBlockValue)){
+                                    if(debug){System.out.println("                 Neighbor become "+itter);}
+                                    map[neighbor.x][neighbor.y]++;
                                     closedList.add(neighbor);
                                     openedList.remove(neighbor);
-                                }
+                                }else if(((map[neighbor.x][neighbor.y])!=0)&&((map[neighbor.x][neighbor.y])==this.freeBlockValue)){
+                                    if(debug){System.out.println("                 Neighbor become "+itter);}
+                                    map[neighbor.x][neighbor.y]=itter;
+//                                    closedList.add(neighbor);
+//                                    openedList.remove(neighbor);
+                                }/*else if(((map[neighbor.x][neighbor.y])!=0)&&((map[neighbor.x][neighbor.y])<itter)){
+                                    map[neighbor.x][neighbor.y]++;
+                                    closedList.add(neighbor);
+                                    openedList.remove(neighbor);
+                                }*/
                             }
-                            map[i][j]=itter;
-                            closedList.add(new Cell(i, j));
-                            openedList.remove(new Cell(i, j));
+//                            if(debug){  
+//                                //System.out.println(i+". itter, "+j+" column, freeBlocValue.");
+//                                System.out.println("        Opened cells: ");this.printListState(openedList);
+//                                System.out.println("        Closed cells: ");this.printListState(closedList);
+//                                //System.out.println("        Neigburghs cells: ");this.printListState(neigh_X);
+//                            }
+//                            System.out.println("        "+itter+". itter; Current cell (freBlock): |"+i+","+j+"| (value "+map[i][j]+")");
+//                            MatrixImageTools.printMapToConsole(map);
                         }
                     }
-                }
+//                }
             }
-            MatrixImageTools.printMapState(map, itter);
-            String filename=itter+"_itter_mappedOutput";
-            MatrixImageTools.exportMapToCSV(map, filename+".csv");
-            MatrixImageTools.exportMatrixToImageFile(map, filename+".png");
+//            System.out.println("     I T E R A T I O N: "+itter);
+//
+//            
+//            String csvFilename=this.outputCSVFilePath.substring(0,outputCSVFilePath.length()-4)+"_itter_"+itter+".csv";
+//            String imageFilename=this.outputImageFilePath.substring(0,outputImageFilePath.length()-4)+"_itter_"+itter+".png";
+//            
+//            MatrixImageTools.printMapToConsole(map);
+//            MatrixImageTools.exportMapToCSV(map, csvFilename);
+//            MatrixImageTools.exportMatrixToImageFile(map, imageFilename);
         }
-        System.out.println("State at the end: ");
-        MatrixImageTools.printMapState(map, itter);
-        MatrixImageTools.exportMapToCSV(map, "mappedOutput.csv");
-        MatrixImageTools.exportMatrixToImageFile(map, "mappedOutput.png");
+        System.out.println("*******************\n E N D  S T A T E: ");
+        //MatrixImageTools.printMapState(map, itter);
+        MatrixImageTools.printMapToConsole(map);
+        MatrixImageTools.exportMapToCSV(map, this.outputCSVFilePath);
+        MatrixImageTools.exportMatrixToImageFile(map, this.outputImageFilePath);
     }
 //    /**
 //     * Printing matrix state.
@@ -144,10 +202,10 @@ public class BlushfireMapMatrix {
     /**
      * Printing matrix state.
      */
-    public void printListState(List<Cell> list, int iter){
+    public void printListState(List<Cell> list){
 
-        System.out.println("    ******** L I S T *******");
-        System.out.println(iter+". iteration:");
+        //System.out.println("    ******** L I S T *******");
+        //System.out.println(iter+". iteration:");
 //        int list_x=0, list_y=0;
 //        for(Cell cell:list){
 //            if(cell.x>list_x)
@@ -163,10 +221,12 @@ public class BlushfireMapMatrix {
 //            }
 //            System.out.println("    Line "+i+": "+line);
 //        }
+        
         for(Cell cell:list){
-            System.out.println("    "+iter+". iteration, cell: "+cell.x+", "+cell.y);
+            System.out.print("|"+cell.x+","+cell.y);
         }
-        System.out.println("    * * * * * * * * * * * *");
+        System.out.print("|\n");
+        //System.out.println("    * * * * * * * * * * * *");
     }
     /**
      * Looping trought matrix and createnig 
@@ -207,7 +267,7 @@ public class BlushfireMapMatrix {
     private void findNeighborsForColumnFreeElments(List<Cell> listToAddNeighb, int[][] map, int x){
         for(int j=0;j<map[0].length;j++){
             if(map[x][j]==freeBlockValue){
-                findFreeCellNeighbors(listToAddNeighb, map, x, j);
+                findCellNeighbors(listToAddNeighb, map, x, j);
             }
         }
     }
@@ -225,63 +285,63 @@ public class BlushfireMapMatrix {
      * @param x
      * @param y 
      */
-    private void findFreeCellNeighbors(List<Cell> listToAddNeighb, int[][] map, int x, int y){
+    private void findCellNeighbors(List<Cell> listToAddNeighb, int[][] map, int x, int y){
         //Cell a = null,b = null,c = null,d = null,e = null,f = null,g = null,h=null;
         //a
         if(((x-1)>=0)&&((y-1)>=0)){
-            if(map[x-1][y-1]==this.freeBlockValue){
+//            if(map[x-1][y-1]==this.freeBlockValue){
                 Cell a=new Cell((x-1),(y-1));
                 listToAddNeighb.add(a);
-            }
+//            }
         }
         //b
         if(((y-1)>=0)){
-            if(map[x][y-1]==this.freeBlockValue){
+//            if(map[x][y-1]==this.freeBlockValue){
                 Cell b=new Cell((x),(y-1));
                 listToAddNeighb.add(b);
-            }
+//            }
         }
         //c
         if(((x+1)<=(map.length-1)) && ((y-1)>=0)){
-            if(map[x+1][y-1]==this.freeBlockValue){
+//            if(map[x+1][y-1]==this.freeBlockValue){
                 Cell c=new Cell((x+1),(y-1));
                 listToAddNeighb.add(c);
-            }
+//            }
         }
         //d
         if(((x-1)>=0)){
-            if(map[x-1][y]==this.freeBlockValue){
+//            if(map[x-1][y]==this.freeBlockValue){
                 Cell d=new Cell((x-1),(y));
                 listToAddNeighb.add(d);
-            }
+//            }
         }
         //e
         if(((x+1)<=(map.length-1))){
-            if(map[x+1][y]==this.freeBlockValue){
+//            if(map[x+1][y]==this.freeBlockValue){
                 Cell e=new Cell((x+1),(y));
                 listToAddNeighb.add(e);
-            }
+//            }
         }
         //f
         if(((x-1)>=0) && ((y+1)<=(map[0].length-1))){
-            if(map[x-1][y+1]==this.freeBlockValue){
+//            if(map[x-1][y+1]==this.freeBlockValue){
                 Cell f=new Cell((x-1),(y+1));
                 listToAddNeighb.add(f);
-            }
+//            }
         }
         //g
         if((y+1)<=(map[0].length-1)){
-            if(map[x][y+1]==this.freeBlockValue){
+//            if(map[x][y+1]==this.freeBlockValue){
                 Cell g=new Cell((x),(y+1));
                 listToAddNeighb.add(g);
-            }
+//            }
         }
         //h
         if(((x+1)<=(map.length-1))&&(y+1)<=(map[0].length-1)){
-            if(map[x+1][y+1]==this.freeBlockValue){
+//            if(map[x+1][y+1]==this.freeBlockValue){
                 Cell h=new Cell((x+1),(y+1));
                 listToAddNeighb.add(h);
-            }
+//            }
         }
     }
     /**
@@ -310,7 +370,7 @@ public class BlushfireMapMatrix {
         }
     }
     /************************************************/
-    /***************Geters, Seters*******************/
+    /****************Getters, Setters****************/
     /************************************************/
     
     public int[][] getMap() {
@@ -328,7 +388,4 @@ public class BlushfireMapMatrix {
     public void setFreeBlockValue(int freeBlockValue) {
         this.freeBlockValue = freeBlockValue;
     }
-    
-    
-    
 }

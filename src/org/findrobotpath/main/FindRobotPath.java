@@ -24,19 +24,20 @@ public class FindRobotPath {
         
         //String inputImagePath="intel-lab_b.png";
         String inputImagePath="1.png";
-        String outpuImagePath="outputImage.png";
-        String outpuCSVPath="outputCSV.csv";
+        String outpuImagePath="_output//outputImage.png";
+        String outpuCSVPath="_output//outputCSV.csv";
 
         MatrixImage mapFile=new MatrixImage(inputImagePath, outpuImagePath, outpuCSVPath);
         
-        //System.out.println("Created maped file "+mapFile.mapImage.toString());
+
         
         int[][] map=mapFile.convertImage(1);
         
-        MatrixImageTools.printMapToConsole(map);
+//        MatrixImageTools.printMapToConsole(map);
         
-        BlushfireMapMatrix bfm=new BlushfireMapMatrix(map,"mappedImage.png","mappedCSV.csv");
+        BlushfireMapMatrix bfm=new BlushfireMapMatrix(map,"_output//mappedImage.png","_output//mappedCSV.csv");
         
+//        BlushfireMapMatrix bfm=new BlushfireMapMatrix("_output//mappedImage.png","_output//mappedCSV.csv");
 //        
 //        Blushfire path=new Blushfire(map);
 //        path.wavefrontSearch();

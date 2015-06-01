@@ -72,7 +72,7 @@ public class MatrixImageTools {
                     writer.append(String.valueOf(map[i][j]));
                     writer.append(',');
                 }
-                System.out.println("    Line "+i+": "+line);
+                //System.out.println("    Line "+i+": "+line);
                 writer.append('\n');
             }
 	    //generate whatever data you want
@@ -140,10 +140,10 @@ public class MatrixImageTools {
                 }
             }
         }
-        System.out.println(" O R I G I N A L");
-        printMapToConsole(origMap);
-        System.out.println(" 255 V A L U E S");
-        printMapToConsole(map);
+//        System.out.println(" O R I G I N A L");
+//        printMapToConsole(origMap);
+//        System.out.println(" 255 V A L U E S");
+//        printMapToConsole(map);
         return map;
     }
 }
