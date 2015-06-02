@@ -134,10 +134,14 @@ public class BlushfireMapMatrix {
                             List<Cell> neigh_X=new ArrayList();
                             findCellNeighbors(neigh_X, map, i, j);
                             //findNeighborsForColumnFreeElments(neigh_X, map,i); //Store Neighbors in list neigh_X
+                            int maxItter=0;
                             for(Cell neighbor:neigh_X){
                                 if(debug){
                                     System.out.println("             Current neighbor: |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");
                                 }
+//                                if((map[neighbor.x][neighbor.y])!=0){
+//                                    maxItter=map[neighbor.x][neighbor.y];
+//                                }
                                 //if(openedList.contains(neighbor)){
                                 if(((map[neighbor.x][neighbor.y])!=0)&&((map[neighbor.x][neighbor.y])!=this.freeBlockValue)){
                                     if(debug){System.out.println("                 Neighbor become "+itter);}
