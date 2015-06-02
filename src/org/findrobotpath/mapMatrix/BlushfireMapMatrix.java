@@ -88,6 +88,66 @@ public class BlushfireMapMatrix {
         List<Cell> openedList=new ArrayList();
         List<Cell> closedList=new ArrayList();
         populateOpenedAndClosedList(map, openedList, closedList); // To populate Opened and closed list
+
+        int itter = 0;
+        while(!openedList.isEmpty()){ //isempty(open_list)==0
+            itter++;
+            for(int i=0;i<map.length;i++){ //for i = 1:length(X) 
+                    for(int j=0;j<map[0].length;j++)//loop trought column for each row
+                    {
+                        Cell current=new Cell(i,j);
+                        if((openedList.contains(current)))//ignore obstacles //&&((map[i][j]==freeBlockValue)||(map[i][j]<itter))
+                        {
+                            List<Cell> neigh_X=new ArrayList();
+                            findCellNeighbors(neigh_X, map, i, j);
+                            //findNeighborsForColumnFreeElments(neigh_X, map,i); //Store Neighbors in list neigh_X
+                            int minNeigburVal=6;
+                            boolean borderZero=false;
+                            for(Cell neighbor:neigh_X)
+                            {
+                                if(map[neighbor.x][neighbor.y]==0){     
+                                    borderZero=true;
+                                }
+                                //System.out.println("             Neigburg val |"+neighbor.x+","+neighbor.y+"| ="+map[neighbor.x][neighbor.y]+"; min="+minNeigburVal+" itter="+itter+") ");
+                                if(map[neighbor.x][neighbor.y]<minNeigburVal)
+                                {
+                                    minNeigburVal=map[neighbor.x][neighbor.y];
+                                }
+                            }
+                            if((borderZero&&((map[i][j])==freeBlockValue)))//{
+                            {
+                                map[i][j]=1;
+                                openedList.add(current);
+                            }
+                            map[i][j]=minNeigburVal+1;
+                            openedList.remove(current);
+                            /*if((!borderZero)){//&&(map[i][j])<=itter
+                                //openedList.add(current);
+                            }else{
+                                closedList.add(current);
+                                openedList.remove(current);
+                            }*/
+                        }
+                    }
+            }
+        }
+        System.out.println("*******************\n E N D  S T A T E: ");
+        //MatrixImageTools.printMapState(map, itter);
+        MatrixImageTools.printMapToConsole(map);
+        MatrixImageTools.exportMapToCSV(map, this.outputCSVFilePath);
+        MatrixImageTools.exportMatrixToImageFile(map, this.outputImageFilePath);
+    }
+    ////////////OLD VERSION ABOVE METHOD/////////////////
+    /**
+     * Loop trough matrix and mapping each cell.
+     * 
+     * At the end export output matrix in 
+     * outptImage and outputCSV file.
+     */
+    public void mapMatrixOLD(int[][] map){
+        List<Cell> openedList=new ArrayList();
+        List<Cell> closedList=new ArrayList();
+        populateOpenedAndClosedList(map, openedList, closedList); // To populate Opened and closed list
         if(debug){
             System.out.println("Start mapping values: ");
             MatrixImageTools.printMapToConsole(map);
@@ -127,16 +187,17 @@ public class BlushfireMapMatrix {
                             int minNeigburVal=6;
                             boolean borderZero=false;
                             for(Cell neighbor:neigh_X){
-                                if(debug){
-                                    //System.out.println("             Current neighbor: |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");      
-                                }
+//                                if(debug){
+//                                    //System.out.println("             Current neighbor: |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");      
+//                                }
                                 if(map[neighbor.x][neighbor.y]==0){
                                     //System.out.println("             Current borderZero neighbor: |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");      
                                     borderZero=true;
                                     //System.out.println("Border zer0 "+borderZero);
                                 }
+                                //System.out.println("             Neigburg val |"+neighbor.x+","+neighbor.y+"| ="+map[neighbor.x][neighbor.y]+"; min="+minNeigburVal+" itter="+itter+") ");
                                 if(map[neighbor.x][neighbor.y]<minNeigburVal){
-                                    //System.out.println("             Min neigburg val |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");
+                                    
                                     minNeigburVal=map[neighbor.x][neighbor.y];
                                     //System.out.println("Border zer0 "+borderZero);
                                 }
@@ -168,10 +229,11 @@ public class BlushfireMapMatrix {
                                 closedList.add(current);
                                 openedList.remove(current);
                             }
-                            if((!borderZero)){//&&(map[i][j])<=itter
-                                map[i][j]=minNeigburVal+1;
+                                
+                            map[i][j]=minNeigburVal+1;
                                 closedList.add(current);
                                 openedList.remove(current);
+                            if((!borderZero)){//&&(map[i][j])<=itter
                                 //openedList.add(current);
                             }else{
                                 closedList.add(current);
