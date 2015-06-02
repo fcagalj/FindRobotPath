@@ -5,10 +5,6 @@
  */
 package org.findrobotpath.mapMatrix;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.findrobotpath.main.MatrixImageTools;
