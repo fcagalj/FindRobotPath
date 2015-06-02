@@ -21,7 +21,7 @@ import org.findrobotpath.main.MatrixImageTools;
  */
 public class BlushfireMapMatrix {
     
-    private boolean debug=true; //flag to debaug logging
+    private boolean debug=false; //flag to debaug logging
     
     //private File outputImageFile;
     //private File outputCSVFile;
@@ -131,12 +131,12 @@ public class BlushfireMapMatrix {
                                     //System.out.println("             Current neighbor: |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");      
                                 }
                                 if(map[neighbor.x][neighbor.y]==0){
-                                    System.out.println("             Current borderZero neighbor: |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");      
+                                    //System.out.println("             Current borderZero neighbor: |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");      
                                     borderZero=true;
                                     //System.out.println("Border zer0 "+borderZero);
                                 }
                                 if(map[neighbor.x][neighbor.y]<minNeigburVal){
-                                    System.out.println("             Min neigburg val |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");
+                                    //System.out.println("             Min neigburg val |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");
                                     minNeigburVal=map[neighbor.x][neighbor.y];
                                     //System.out.println("Border zer0 "+borderZero);
                                 }
