@@ -57,7 +57,7 @@ public class MatrixImageTools {
         System.out.println("****************************");
     }
     /**
-     * Output map to the console.
+     * Output map to the CSV file.
      */
     public static void exportMapToCSV(int[][] map, String outputCSVpath){
         
