@@ -21,7 +21,7 @@ import org.findrobotpath.main.MatrixImageTools;
  */
 public class BlushfireMapMatrix {
     
-    private boolean debug=false; //flag to debaug logging
+    private boolean debug=true; //flag to debaug logging
     
     //private File outputImageFile;
     //private File outputCSVFile;
@@ -29,13 +29,13 @@ public class BlushfireMapMatrix {
     private String outputCSVFilePath;
     
     //Array matrix (testin value)
-    private int[][] map=    {{  0,   0,   0,   0,    0,   0},
-                     {255,   0, 255, 255,    0,   0},
-                     {  0,   0,   0,   0,  255,   0},
-                     {  0,   0,   0,   0,  255,   0},
-                     {255, 255, 255, 255,  255,   0},
-                     {255, 255, 255, 255,  255,   0},
-                     {  0,   0,   0,   0,  255, 255}};
+    private int[][] map=   {{  0,   0,   0,   0,    0,   0},
+                            {255,   0, 255, 255,    0,   0},
+                            {  0,   0, 255, 255,  255,   0},
+                            {  0,   0, 255, 255,  255,   0},
+                            {255, 255, 255, 255,  255,   0},
+                            {255, 255, 255, 255,  255,   0},
+                            {  0,   0,   0,   0,  255, 255}};
 				  
     private int freeBlockValue=255;
     
@@ -121,43 +121,61 @@ public class BlushfireMapMatrix {
                         //if(debug){System.out.println("      Current cell: |"+i+","+j+"| (value "+map[i][j]+")");}
                         if((openedList.contains(current))){//ignore obstacles //&&((map[i][j]==freeBlockValue)||(map[i][j]<itter))
                             
-                            if((map[i][j])==freeBlockValue){
-                                map[i][j]=itter;
-//                                closedList.add(current);
-//                                openedList.remove(current);
-                            }
-                            else if((map[i][j])<itter){
-                                map[i][j]++;
-                                closedList.add(current);
-                                openedList.remove(current);
-                            }
                             List<Cell> neigh_X=new ArrayList();
                             findCellNeighbors(neigh_X, map, i, j);
                             //findNeighborsForColumnFreeElments(neigh_X, map,i); //Store Neighbors in list neigh_X
-                            int maxItter=0;
+                            int minNeigburVal=6;
+                            boolean borderZero=false;
                             for(Cell neighbor:neigh_X){
                                 if(debug){
-                                    System.out.println("             Current neighbor: |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");
+                                    //System.out.println("             Current neighbor: |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");      
                                 }
-//                                if((map[neighbor.x][neighbor.y])!=0){
-//                                    maxItter=map[neighbor.x][neighbor.y];
-//                                }
-                                //if(openedList.contains(neighbor)){
-                                if(((map[neighbor.x][neighbor.y])!=0)&&((map[neighbor.x][neighbor.y])!=this.freeBlockValue)){
-                                    if(debug){System.out.println("                 Neighbor become "+itter);}
-                                    map[neighbor.x][neighbor.y]++;
-                                    closedList.add(neighbor);
-                                    openedList.remove(neighbor);
-                                }else if(((map[neighbor.x][neighbor.y])!=0)&&((map[neighbor.x][neighbor.y])==this.freeBlockValue)){
-                                    if(debug){System.out.println("                 Neighbor become "+itter);}
-                                    map[neighbor.x][neighbor.y]=itter;
+                                if(map[neighbor.x][neighbor.y]==0){
+                                    System.out.println("             Current borderZero neighbor: |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");      
+                                    borderZero=true;
+                                    //System.out.println("Border zer0 "+borderZero);
+                                }
+                                if(map[neighbor.x][neighbor.y]<minNeigburVal){
+                                    System.out.println("             Min neigburg val |"+neighbor.x+","+neighbor.y+"|(value="+map[neighbor.x][neighbor.y]+", itter="+itter+") ");
+                                    minNeigburVal=map[neighbor.x][neighbor.y];
+                                    //System.out.println("Border zer0 "+borderZero);
+                                }
+////                                if((map[neighbor.x][neighbor.y])!=0){
+////                                    maxItter=map[neighbor.x][neighbor.y];
+////                                }
+//                                //if(openedList.contains(neighbor)){
+//                                if(((map[neighbor.x][neighbor.y])!=0)&&((map[neighbor.x][neighbor.y])==this.freeBlockValue)){
+//                                    if(debug){System.out.println("                 Neighbor become "+itter);}
+//                                    map[neighbor.x][neighbor.y]=itter+1;
 //                                    closedList.add(neighbor);
 //                                    openedList.remove(neighbor);
-                                }/*else if(((map[neighbor.x][neighbor.y])!=0)&&((map[neighbor.x][neighbor.y])<itter)){
-                                    map[neighbor.x][neighbor.y]++;
-                                    closedList.add(neighbor);
-                                    openedList.remove(neighbor);
-                                }*/
+//                                }
+//                                else if(((map[neighbor.x][neighbor.y])!=0)&&((map[neighbor.x][neighbor.y])!=this.freeBlockValue)&&((map[neighbor.x][neighbor.y])<=itter)){
+//                                    if(debug){System.out.println("                 Neighbor become "+itter);}
+//                                    map[neighbor.x][neighbor.y]++;
+//                                    closedList.add(neighbor);
+//                                    openedList.remove(neighbor);
+//                                } /*else if(((map[neighbor.x][neighbor.y])!=0)&&((map[neighbor.x][neighbor.y])<itter)){
+//                                    map[neighbor.x][neighbor.y]++;
+//                                    closedList.add(neighbor);
+//                                    openedList.remove(neighbor);
+//                                }*/
+                            }
+                            
+                            if((borderZero)){//{&&((map[i][j])==freeBlockValue)
+                                //System.out.println(itter+". itter: |"+i+","+j+"| borderZero "+borderZero);
+                                map[i][j]=1;
+                                closedList.add(current);
+                                openedList.remove(current);
+                            }
+                            if((!borderZero)){//&&(map[i][j])<=itter
+                                map[i][j]=minNeigburVal+1;
+                                closedList.add(current);
+                                openedList.remove(current);
+                                //openedList.add(current);
+                            }else{
+                                closedList.add(current);
+                                openedList.remove(current);
                             }
 //                            if(debug){  
 //                                //System.out.println(i+". itter, "+j+" column, freeBlocValue.");
@@ -268,6 +286,7 @@ public class BlushfireMapMatrix {
      * Serching for neighbors of column elements that are not zero.
      * It doesnt matter if cell is on edge or similar...
      */
+    @Deprecated
     private void findNeighborsForColumnFreeElments(List<Cell> listToAddNeighb, int[][] map, int x){
         for(int j=0;j<map[0].length;j++){
             if(map[x][j]==freeBlockValue){
@@ -292,12 +311,12 @@ public class BlushfireMapMatrix {
     private void findCellNeighbors(List<Cell> listToAddNeighb, int[][] map, int x, int y){
         //Cell a = null,b = null,c = null,d = null,e = null,f = null,g = null,h=null;
         //a
-        if(((x-1)>=0)&&((y-1)>=0)){
-//            if(map[x-1][y-1]==this.freeBlockValue){
-                Cell a=new Cell((x-1),(y-1));
-                listToAddNeighb.add(a);
-//            }
-        }
+//        if(((x-1)>=0)&&((y-1)>=0)){
+////            if(map[x-1][y-1]==this.freeBlockValue){
+//                Cell a=new Cell((x-1),(y-1));
+//                listToAddNeighb.add(a);
+////            }
+//        }
         //b
         if(((y-1)>=0)){
 //            if(map[x][y-1]==this.freeBlockValue){
@@ -307,12 +326,12 @@ public class BlushfireMapMatrix {
         }
         //c
         if(((x+1)<=(map.length-1)) && ((y-1)>=0)){
-//            if(map[x+1][y-1]==this.freeBlockValue){
-                Cell c=new Cell((x+1),(y-1));
-                listToAddNeighb.add(c);
-//            }
+////            if(map[x+1][y-1]==this.freeBlockValue){
+//                Cell c=new Cell((x+1),(y-1));
+//                listToAddNeighb.add(c);
+////            }
         }
-        //d
+//        //d
         if(((x-1)>=0)){
 //            if(map[x-1][y]==this.freeBlockValue){
                 Cell d=new Cell((x-1),(y));
@@ -326,13 +345,13 @@ public class BlushfireMapMatrix {
                 listToAddNeighb.add(e);
 //            }
         }
-        //f
-        if(((x-1)>=0) && ((y+1)<=(map[0].length-1))){
-//            if(map[x-1][y+1]==this.freeBlockValue){
-                Cell f=new Cell((x-1),(y+1));
-                listToAddNeighb.add(f);
-//            }
-        }
+//        //f
+//        if(((x-1)>=0) && ((y+1)<=(map[0].length-1))){
+////            if(map[x-1][y+1]==this.freeBlockValue){
+//                Cell f=new Cell((x-1),(y+1));
+//                listToAddNeighb.add(f);
+////            }
+//        }
         //g
         if((y+1)<=(map[0].length-1)){
 //            if(map[x][y+1]==this.freeBlockValue){
@@ -340,13 +359,13 @@ public class BlushfireMapMatrix {
                 listToAddNeighb.add(g);
 //            }
         }
-        //h
-        if(((x+1)<=(map.length-1))&&(y+1)<=(map[0].length-1)){
-//            if(map[x+1][y+1]==this.freeBlockValue){
-                Cell h=new Cell((x+1),(y+1));
-                listToAddNeighb.add(h);
-//            }
-        }
+//        //h
+//        if(((x+1)<=(map.length-1))&&(y+1)<=(map[0].length-1)){
+////            if(map[x+1][y+1]==this.freeBlockValue){
+//                Cell h=new Cell((x+1),(y+1));
+//                listToAddNeighb.add(h);
+////            }
+//        }
     }
     /**
      * Add column at given index to the list.
